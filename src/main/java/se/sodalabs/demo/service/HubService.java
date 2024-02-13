@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import se.sodalabs.demo.domain.FeedbackDTO;
 import se.sodalabs.demo.domain.ParticipantDTO;
 
 @Service
@@ -84,6 +85,18 @@ public class HubService {
 
     return restTemplate.exchange(
         hubAddress + "/api/v1/participant/" + id + "/feedback",
+        HttpMethod.POST,
+        request,
+        String.class);
+  }
+
+  public ResponseEntity<String> sendFeedback(FeedbackDTO feedback) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Content-Type", "application/json");
+    HttpEntity<FeedbackDTO> request = new HttpEntity<>(feedback, headers);
+
+    return restTemplate.exchange(
+        hubAddress + "/api/v2/participant/" + id + "/feedback",
         HttpMethod.POST,
         request,
         String.class);

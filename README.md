@@ -153,5 +153,5 @@ way so that we don't break the service for clients that haven't been updated yet
 ❗ Create a PR for the "exercise 2" branch to main    
 ❗ Sync rollout with the instructor, making sure the backend hub is upgraded first  
 ❗ After the hub is upgraded, double-check that your service still works before deploying a new
-version  
+version
 ❗ Merge the "exercise 2" PR, wait for it to deploy, and leave some feedback for the second exercise!  

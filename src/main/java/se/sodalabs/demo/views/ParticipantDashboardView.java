@@ -3,6 +3,7 @@ package se.sodalabs.demo.views;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Input;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.ContentAlignment;
@@ -14,6 +15,7 @@ import com.vaadin.flow.router.Route;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import se.sodalabs.demo.domain.FeedbackDTO;
 import se.sodalabs.demo.service.HubService;
 
 @PageTitle("Feedback Survey")
@@ -67,9 +69,15 @@ public class ParticipantDashboardView extends VerticalLayout {
     registerButton.addClassName("button");
 
     Div firstExerciseFeedbackDiv = getFirstExerciseFeedbackDiv(hubService);
+    Div secondExerciseFeedbackDiv = getSecondExerciseFeedbackDiv(hubService);
 
     dashboardLayout.add(
-        title, serviceId, registerButton, unregisterButton, firstExerciseFeedbackDiv);
+        title,
+        serviceId,
+        registerButton,
+        unregisterButton,
+        firstExerciseFeedbackDiv,
+        secondExerciseFeedbackDiv);
     add(dashboardLayout);
   }
 
@@ -100,6 +108,41 @@ public class ParticipantDashboardView extends VerticalLayout {
     submitButton.addClassName("button");
     firstExerciseFeedbackDiv.add(radioButtonGroup, submitButton);
     return firstExerciseFeedbackDiv;
+  }
+
+  @NotNull
+  private static Div getSecondExerciseFeedbackDiv(HubService hubService) {
+    Div secondExerciseFeedbackDiv = new Div();
+    secondExerciseFeedbackDiv.setWidthFull();
+    secondExerciseFeedbackDiv.addClassName("exercise-container");
+    RadioButtonGroup<Integer> radioButtonGroup = new RadioButtonGroup<>();
+    radioButtonGroup.setLabel("Second Exercise Happiness Score:");
+    radioButtonGroup.setItems(0, 25, 50, 75, 100);
+    radioButtonGroup.setWidthFull();
+    radioButtonGroup.addClassName("radio-button-group");
+
+    Input commentInput = new Input();
+    commentInput.setType("text");
+    commentInput.setWidthFull();
+    commentInput.setPlaceholder("Comment");
+
+    Button submitButton =
+        new Button(
+            "Submit",
+            event -> {
+              Integer selectedValue = radioButtonGroup.getValue();
+              if (selectedValue != null) {
+                FeedbackDTO feedbackToSubmit = new FeedbackDTO(1, selectedValue, "");
+                Notification.show(
+                    String.valueOf(hubService.sendFeedback(feedbackToSubmit).getStatusCode()));
+              } else {
+                Notification.show("Please select a happiness score!");
+              }
+            });
+    submitButton.setWidthFull();
+    submitButton.addClassName("button");
+    secondExerciseFeedbackDiv.add(radioButtonGroup, commentInput, submitButton);
+    return secondExerciseFeedbackDiv;
   }
 
   private void showResponse(String response) {
